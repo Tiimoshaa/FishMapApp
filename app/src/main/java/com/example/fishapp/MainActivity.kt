@@ -1,15 +1,11 @@
 package com.example.fishapp
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-
-
+import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,7 +21,9 @@ class MainActivity : AppCompatActivity() {
             val password = passwordInput.text.toString()
 
             if (username.isNotEmpty() && password.isNotEmpty()) {
-                Toast.makeText(this, "Добро пожаловать, $username!", Toast.LENGTH_SHORT).show()
+                // Переход на следующую активность
+                val intent = Intent(this, SecondActivity::class.java)
+                startActivity(intent)
             } else {
                 Toast.makeText(this, "Заполните все поля", Toast.LENGTH_SHORT).show()
             }
