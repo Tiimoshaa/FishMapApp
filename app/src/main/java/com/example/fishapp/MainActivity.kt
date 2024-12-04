@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
             val password = passwordInput.text.toString()
 
             if (username.isNotEmpty() && password.isNotEmpty()) {
-                // Проверяем, есть ли такой пользователь в базе данных
+
                 database.orderByChild("username").equalTo(username)
                     .addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(snapshot: DataSnapshot) {
