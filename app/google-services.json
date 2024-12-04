@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "564728494850",
+    "project_id": "fishmapapp-9c484",
+    "storage_bucket": "fishmapapp-9c484.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:564728494850:android:c9dfd52c8da87bd004201b",
+        "android_client_info": {
+          "package_name": "com.example.fishapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDym_w3a8fF-s-vd5g9BCNP4ZxNHQfyZtI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
