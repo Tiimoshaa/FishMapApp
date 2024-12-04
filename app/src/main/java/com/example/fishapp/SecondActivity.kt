@@ -16,7 +16,7 @@ class SecondActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_second)
 
-        // Подключение к Firebase Realtime Database
+
         database = FirebaseDatabase.getInstance().reference
 
         val dataInput = findViewById<EditText>(R.id.dataInput)
@@ -26,13 +26,13 @@ class SecondActivity : AppCompatActivity() {
             val data = dataInput.text.toString()
 
             if (data.isNotEmpty()) {
-                // Генерация уникального ключа и сохранение данных
+
                 val key = database.push().key
                 if (key != null) {
                     database.child("user_data").child(key).setValue(data)
                         .addOnSuccessListener {
                             Toast.makeText(this, "Данные успешно отправлены!", Toast.LENGTH_SHORT).show()
-                            dataInput.text.clear() // Очистка поля ввода
+                            dataInput.text.clear()
                         }
                         .addOnFailureListener {
                             Toast.makeText(this, "Ошибка отправки данных", Toast.LENGTH_SHORT).show()
