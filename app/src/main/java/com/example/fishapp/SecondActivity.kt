@@ -1,46 +1,48 @@
 package com.example.fishapp
 
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import org.osmdroid.config.Configuration
+import org.osmdroid.views.MapView
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.overlay.Marker
 
 class SecondActivity : AppCompatActivity() {
-
-    private lateinit var database: DatabaseReference
+    private lateinit var mapView: MapView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
+        Configuration.getInstance().load(applicationContext, androidx.preference.PreferenceManager.getDefaultSharedPreferences(this))
+
         setContentView(R.layout.activity_second)
 
 
-        database = FirebaseDatabase.getInstance().reference
+        mapView = findViewById(R.id.map)
+        mapView.setMultiTouchControls(true)
 
-        val dataInput = findViewById<EditText>(R.id.dataInput)
-        val sendDataButton = findViewById<Button>(R.id.sendDataButton)
 
-        sendDataButton.setOnClickListener {
-            val data = dataInput.text.toString()
+        val startPoint = GeoPoint(55.7558, 37.6173) // TODO: Поставил старт на москву, мб надо надо сделать запоминание ласт активности
+        mapView.controller.setZoom(10.0)
+        mapView.controller.setCenter(startPoint)
 
-            if (data.isNotEmpty()) {
 
-                val key = database.push().key
-                if (key != null) {
-                    database.child("user_data").child(key).setValue(data)
-                        .addOnSuccessListener {
-                            Toast.makeText(this, "Данные успешно отправлены!", Toast.LENGTH_SHORT).show()
-                            dataInput.text.clear()
-                        }
-                        .addOnFailureListener {
-                            Toast.makeText(this, "Ошибка отправки данных", Toast.LENGTH_SHORT).show()
-                        }
-                }
-            } else {
-                Toast.makeText(this, "Поле ввода не должно быть пустым", Toast.LENGTH_SHORT).show()
-            }
-        }
+        val marker = Marker(mapView)
+        marker.position = startPoint
+        marker.title = "Москва"
+        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+        mapView.overlays.add(marker) // TODO: Метки надо крепить по гео, + скидывать их в firebase
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mapView.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mapView.onPause()
     }
 }

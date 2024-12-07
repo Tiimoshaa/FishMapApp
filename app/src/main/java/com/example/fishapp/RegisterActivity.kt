@@ -16,7 +16,7 @@ class RegisterActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
-        // Подключение к Firebase Realtime Database
+
         database = FirebaseDatabase.getInstance().reference
 
         val usernameInput = findViewById<EditText>(R.id.usernameInput)
@@ -30,13 +30,13 @@ class RegisterActivity : AppCompatActivity() {
             val email = emailInput.text.toString()
 
             if (username.isNotEmpty() && password.isNotEmpty() && email.isNotEmpty()) {
-                // Сохранение данных пользователя в Firebase
+
                 val userId = database.push().key
                 if (userId != null) {
                     val user = mapOf(
                         "username" to username,
                         "password" to password,
-                        "email" to email
+                        "email" to email //TODO: Надо бы сделать карту по стандарту и регистрацию как отдельную вкладку
                     )
                     database.child("users").child(userId).setValue(user)
                         .addOnSuccessListener {
