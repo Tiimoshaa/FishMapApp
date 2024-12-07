@@ -21,17 +21,23 @@ class RegisterActivity : AppCompatActivity() {
 
         val usernameInput = findViewById<EditText>(R.id.usernameInput)
         val passwordInput = findViewById<EditText>(R.id.passwordInput)
+        val emailInput = findViewById<EditText>(R.id.emailInput)
         val registerButton = findViewById<Button>(R.id.registerButton)
 
         registerButton.setOnClickListener {
             val username = usernameInput.text.toString()
             val password = passwordInput.text.toString()
+            val email = emailInput.text.toString()
 
-            if (username.isNotEmpty() && password.isNotEmpty()) {
+            if (username.isNotEmpty() && password.isNotEmpty() && email.isNotEmpty()) {
                 // Сохранение данных пользователя в Firebase
                 val userId = database.push().key
                 if (userId != null) {
-                    val user = mapOf("username" to username, "password" to password)
+                    val user = mapOf(
+                        "username" to username,
+                        "password" to password,
+                        "email" to email
+                    )
                     database.child("users").child(userId).setValue(user)
                         .addOnSuccessListener {
                             Toast.makeText(this, "Регистрация прошла успешно!", Toast.LENGTH_SHORT).show()
