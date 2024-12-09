@@ -2,16 +2,18 @@ package com.example.fishapp
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.ImageButton
+import android.widget.Button
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import org.osmdroid.config.Configuration
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
-import android.widget.Button
-
 
 class SecondActivity : AppCompatActivity() {
     private lateinit var mapView: MapView
+    private var username: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,6 +23,14 @@ class SecondActivity : AppCompatActivity() {
 
         // Установка разметки с картой
         setContentView(R.layout.activity_second)
+
+        // Извлечение имени пользователя
+        username = intent.getStringExtra("username")
+        if (username != null) {
+            Toast.makeText(this, "Добро пожаловать, $username!", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, "Ошибка: имя пользователя не передано!", Toast.LENGTH_SHORT).show()
+        }
 
         // Инициализация MapView
         mapView = findViewById(R.id.map)
@@ -36,6 +46,18 @@ class SecondActivity : AppCompatActivity() {
         addMarkerButton.setOnClickListener {
             val intent = Intent(this, AddMarkerActivity::class.java)
             startActivityForResult(intent, 1)
+        }
+
+        // Кнопка перехода в профиль
+        val profileButton = findViewById<ImageButton>(R.id.imageButton2)
+        profileButton.setOnClickListener {
+            if (username != null) {
+                val intent = Intent(this, ProfileActivity::class.java)
+                intent.putExtra("username", username) // Передаем имя пользователя в ProfileActivity
+                startActivity(intent)
+            } else {
+                Toast.makeText(this, "Ошибка: пользователь не найден!", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

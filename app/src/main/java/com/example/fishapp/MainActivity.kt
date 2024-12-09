@@ -40,16 +40,13 @@ class MainActivity : AppCompatActivity() {
 
                                     if (storedPassword == password) {
                                         // Вход успешен
-                                        Toast.makeText(
-                                            this@MainActivity,
-                                            "Успешный вход",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                        val intent =
-                                            Intent(this@MainActivity, SecondActivity::class.java)
+                                        Toast.makeText(this@MainActivity, "Успешный вход", Toast.LENGTH_SHORT).show()
+                                        val intent = Intent(this@MainActivity, SecondActivity::class.java)
+                                        intent.putExtra("username", username)
                                         startActivity(intent)
                                         finish()
                                         return
+
                                     } else {
                                         Toast.makeText(
                                             this@MainActivity,
