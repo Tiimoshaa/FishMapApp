@@ -14,8 +14,8 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 
-// Класс для хранения данных метки
-data class MarkerData(val title: String = "", val latitude: Double = 0.0, val longitude: Double = 0.0)
+
+
 
 class SecondActivity : AppCompatActivity() {
     private lateinit var mapView: MapView
@@ -111,22 +111,42 @@ class SecondActivity : AppCompatActivity() {
         // Получение центра карты
         val centerPoint = mapView.mapCenter as GeoPoint
 
+        // Создаем данные для метки, включая username
+        val markerData = MarkerData(
+            title = title,
+            latitude = centerPoint.latitude,
+            longitude = centerPoint.longitude,
+            username = username ?: ""
+        )
+
         // Создание нового маркера
-        val marker = Marker(mapView)
-        marker.position = centerPoint
-        marker.title = title
-        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+        val marker = Marker(mapView).apply {
+            position = centerPoint
+            this.title = markerData.title
+            setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+            setRelatedObject(markerData)
+
+            // Назначаем обработчик клика по маркеру прямо сейчас
+            setOnMarkerClickListener { clickedMarker, _ ->
+                val data = clickedMarker.relatedObject as? MarkerData
+                if (data != null) {
+                    showMarkerInfoDialog(data)
+                }
+                true
+            }
+        }
+
+        // Добавляем маркер на карту
         mapView.overlays.add(marker)
         mapView.invalidate()
 
         // Сохранение маркера в Firebase
-        saveMarkerToFirebase(title, centerPoint.latitude, centerPoint.longitude)
+        saveMarkerToFirebase(markerData)
     }
 
-    private fun saveMarkerToFirebase(title: String, latitude: Double, longitude: Double) {
-        val markerId = database.push().key // Уникальный ключ для маркера
+    private fun saveMarkerToFirebase(markerData: MarkerData) {
+        val markerId = database.push().key
         if (markerId != null) {
-            val markerData = MarkerData(title, latitude, longitude)
             database.child(markerId).setValue(markerData)
                 .addOnSuccessListener {
                     Toast.makeText(this, "Метка сохранена", Toast.LENGTH_SHORT).show()
@@ -136,6 +156,7 @@ class SecondActivity : AppCompatActivity() {
                 }
         }
     }
+
 
     private fun loadMarkersFromFirebase() {
         database.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -156,20 +177,57 @@ class SecondActivity : AppCompatActivity() {
 
     private fun addMarkerToMap(markerData: MarkerData) {
         val geoPoint = GeoPoint(markerData.latitude, markerData.longitude)
+        val marker = Marker(mapView).apply {
+            position = geoPoint
+            // Заголовок мы можем оставить так, чтобы он выглядел красиво,
+            // либо просто хранить название и отдельно показывать кто добавил
+            title = markerData.title
+            setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
 
-        val marker = Marker(mapView)
-        marker.position = geoPoint
-        marker.title = markerData.title
-        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+            // Сохраняем объект MarkerData в маркер, чтобы при нажатии на него было легко получить данные
+            setRelatedObject(markerData)
+
+            // Настраиваем обработчик клика по маркеру
+            setOnMarkerClickListener { clickedMarker, _ ->
+                val data = clickedMarker.relatedObject as? MarkerData
+                if (data != null) {
+                    showMarkerInfoDialog(data)
+                }
+                true // Возвращаем true, чтобы событие не передавалось дальше
+            }
+        }
+
         mapView.overlays.add(marker)
         mapView.invalidate()
+    }
+
+    private fun showMarkerInfoDialog(markerData: MarkerData) {
+        AlertDialog.Builder(this)
+            .setTitle("Информация о метке")
+            .setMessage("Название: ${markerData.title}\nДобавил: ${markerData.username}")
+            .setPositiveButton("OK", null)
+            .show()
     }
 
     private fun showDeleteMarkerDialog() {
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Выберите метку для удаления")
 
-        val markerTitles = mapView.overlays.filterIsInstance<Marker>().map { it.title }.toTypedArray()
+        // Фильтруем маркеры, чтобы отображать только те, что принадлежат текущему пользователю
+        val userMarkers = mapView.overlays
+            .filterIsInstance<Marker>()
+            .filter {
+                val data = it.relatedObject as? MarkerData
+                data?.username == username
+            }
+
+        // Если у пользователя нет своих маркеров, сообщаем об этом
+        if (userMarkers.isEmpty()) {
+            Toast.makeText(this, "У вас нет собственных меток для удаления", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val markerTitles = userMarkers.map { it.title }.toTypedArray()
 
         builder.setItems(markerTitles) { dialog, which ->
             val selectedTitle = markerTitles[which]
@@ -185,25 +243,41 @@ class SecondActivity : AppCompatActivity() {
     }
 
     private fun deleteMarker(title: String) {
-        // Удаление маркера с карты
+        // Находим маркер на карте
         val markerToRemove = mapView.overlays.filterIsInstance<Marker>().find { it.title == title }
         if (markerToRemove != null) {
-            mapView.overlays.remove(markerToRemove)
-            mapView.invalidate()
+            val data = markerToRemove.relatedObject as? MarkerData
+
+            // Проверяем, принадлежит ли маркер текущему пользователю
+            if (data?.username == username) {
+                // Если да, сначала удаляем с карты
+                mapView.overlays.remove(markerToRemove)
+                mapView.invalidate()
+
+                // Удаляем из Firebase
+                database.orderByChild("title").equalTo(title).addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        for (markerSnapshot in snapshot.children) {
+                            val dbMarkerData = markerSnapshot.getValue(MarkerData::class.java)
+                            // Дополнительная проверка для надежности
+                            if (dbMarkerData?.username == username) {
+                                markerSnapshot.ref.removeValue()
+                                Toast.makeText(this@SecondActivity, "Метка удалена", Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(this@SecondActivity, "Вы не можете удалить чужую метку", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        Toast.makeText(this@SecondActivity, "Ошибка удаления: ${error.message}", Toast.LENGTH_SHORT).show()
+                    }
+                })
+            } else {
+                Toast.makeText(this, "Вы не можете удалить чужую метку", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            Toast.makeText(this, "Метка не найдена", Toast.LENGTH_SHORT).show()
         }
-
-        // Удаление маркера из Firebase
-        database.orderByChild("title").equalTo(title).addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                for (markerSnapshot in snapshot.children) {
-                    markerSnapshot.ref.removeValue()
-                }
-                Toast.makeText(this@SecondActivity, "Метка удалена", Toast.LENGTH_SHORT).show()
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(this@SecondActivity, "Ошибка удаления: ${error.message}", Toast.LENGTH_SHORT).show()
-            }
-        })
     }
 }
