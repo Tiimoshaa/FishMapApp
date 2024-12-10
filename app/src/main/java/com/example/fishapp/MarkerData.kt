@@ -5,7 +5,8 @@ data class MarkerData(
     val latitude: Double = 0.0,
     val longitude: Double = 0.0,
     val username: String = "",
-    val imageUrl: String = ""
+    val species: String = "",
+    val massRange: String = ""
 ){
 
 }

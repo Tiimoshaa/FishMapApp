@@ -33,6 +33,15 @@
     </org.osmdroid.views.MapView>
 
     <Button
+        android:id="@+id/filterButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="16dp"
+        android:text="Фильтр"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <Button
         android:id="@+id/addMarkerButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

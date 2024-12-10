@@ -13,6 +13,7 @@ import org.osmdroid.config.Configuration
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
+import android.widget.Spinner
 
 
 
@@ -23,6 +24,8 @@ class SecondActivity : AppCompatActivity() {
     private lateinit var deleteMarkerButton: Button
     private lateinit var database: DatabaseReference
     private var username: String? = null
+    private val allMarkersData = mutableListOf<MarkerData>()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,20 +83,44 @@ class SecondActivity : AppCompatActivity() {
                 Toast.makeText(this, "Ошибка: пользователь не найден!", Toast.LENGTH_SHORT).show()
             }
         }
+
+        val filterButton = findViewById<Button>(R.id.filterButton)
+        filterButton.setOnClickListener {
+            showFilterDialog()
+        }
+
     }
 
     private fun showAddMarkerDialog() {
         val builder = AlertDialog.Builder(this)
-        builder.setTitle("Название метки")
+        builder.setTitle("Добавить метку")
 
-        val input = EditText(this)
-        input.hint = "Введите название"
-        builder.setView(input)
+        val dialogView = layoutInflater.inflate(R.layout.dialog_add_marker, null)
+        builder.setView(dialogView)
+
+        val titleInput = dialogView.findViewById<EditText>(R.id.markerTitleInput)
+        val speciesSpinner = dialogView.findViewById<Spinner>(R.id.speciesSpinner)
+        val massSpinner = dialogView.findViewById<Spinner>(R.id.massSpinner)
+
+        // Задаём списки для спиннеров
+        val speciesOptions = arrayOf("Окунь", "Карась", "Щука")
+        val massOptions = arrayOf("0-5кг", "5-10кг", "10+кг")
+
+        val speciesAdapter = android.widget.ArrayAdapter(this, android.R.layout.simple_spinner_item, speciesOptions)
+        speciesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        speciesSpinner.adapter = speciesAdapter
+
+        val massAdapter = android.widget.ArrayAdapter(this, android.R.layout.simple_spinner_item, massOptions)
+        massAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        massSpinner.adapter = massAdapter
 
         builder.setPositiveButton("Добавить") { dialog, _ ->
-            val markerTitle = input.text.toString().trim()
+            val markerTitle = titleInput.text.toString().trim()
+            val selectedSpecies = speciesSpinner.selectedItem.toString()
+            val selectedMass = massSpinner.selectedItem.toString()
+
             if (markerTitle.isNotEmpty()) {
-                addMarkerAtCenter(markerTitle)
+                addMarkerAtCenter(markerTitle, selectedSpecies, selectedMass)
             } else {
                 Toast.makeText(this, "Название не может быть пустым", Toast.LENGTH_SHORT).show()
             }
@@ -107,26 +134,25 @@ class SecondActivity : AppCompatActivity() {
         builder.show()
     }
 
-    private fun addMarkerAtCenter(title: String) {
-        // Получение центра карты
+
+    private fun addMarkerAtCenter(title: String, species: String, massRange: String) {
         val centerPoint = mapView.mapCenter as GeoPoint
 
-        // Создаем данные для метки, включая username
         val markerData = MarkerData(
             title = title,
             latitude = centerPoint.latitude,
             longitude = centerPoint.longitude,
-            username = username ?: ""
+            username = username ?: "",
+            species = species,
+            massRange = massRange
         )
 
-        // Создание нового маркера
         val marker = Marker(mapView).apply {
             position = centerPoint
             this.title = markerData.title
             setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
             setRelatedObject(markerData)
 
-            // Назначаем обработчик клика по маркеру прямо сейчас
             setOnMarkerClickListener { clickedMarker, _ ->
                 val data = clickedMarker.relatedObject as? MarkerData
                 if (data != null) {
@@ -136,13 +162,12 @@ class SecondActivity : AppCompatActivity() {
             }
         }
 
-        // Добавляем маркер на карту
         mapView.overlays.add(marker)
         mapView.invalidate()
 
-        // Сохранение маркера в Firebase
         saveMarkerToFirebase(markerData)
     }
+
 
     private fun saveMarkerToFirebase(markerData: MarkerData) {
         val markerId = database.push().key
@@ -158,15 +183,19 @@ class SecondActivity : AppCompatActivity() {
     }
 
 
+
     private fun loadMarkersFromFirebase() {
         database.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
+                allMarkersData.clear()
                 for (markerSnapshot in snapshot.children) {
                     val markerData = markerSnapshot.getValue(MarkerData::class.java)
                     if (markerData != null) {
-                        addMarkerToMap(markerData)
+                        allMarkersData.add(markerData)
                     }
                 }
+                // После загрузки всех маркеров отображаем их
+                displayMarkers(allMarkersData)
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -174,6 +203,65 @@ class SecondActivity : AppCompatActivity() {
             }
         })
     }
+
+    private fun showFilterDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Фильтр маркеров")
+
+        val dialogView = layoutInflater.inflate(R.layout.dialog_filter, null)
+        builder.setView(dialogView)
+
+        val speciesSpinner = dialogView.findViewById<Spinner>(R.id.speciesFilterSpinner)
+        val massSpinner = dialogView.findViewById<Spinner>(R.id.massFilterSpinner)
+
+        val speciesOptions = arrayOf("Все", "Окунь", "Карась", "Щука")
+        val massOptions = arrayOf("Все", "0-5кг", "5-10кг", "10+кг")
+
+        val speciesAdapter = android.widget.ArrayAdapter(this, android.R.layout.simple_spinner_item, speciesOptions)
+        speciesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        speciesSpinner.adapter = speciesAdapter
+
+        val massAdapter = android.widget.ArrayAdapter(this, android.R.layout.simple_spinner_item, massOptions)
+        massAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        massSpinner.adapter = massAdapter
+
+        builder.setPositiveButton("Применить") { dialog, _ ->
+            val selectedSpecies = speciesSpinner.selectedItem.toString()
+            val selectedMass = massSpinner.selectedItem.toString()
+
+            applyFilter(selectedSpecies, selectedMass)
+            dialog.dismiss()
+        }
+
+        builder.setNegativeButton("Отмена") { dialog, _ ->
+            dialog.cancel()
+        }
+
+        builder.show()
+    }
+
+    private fun applyFilter(selectedSpecies: String, selectedMass: String) {
+        val filteredMarkers = allMarkersData.filter { marker ->
+            val speciesMatch = (selectedSpecies == "Все" || marker.species == selectedSpecies)
+            val massMatch = (selectedMass == "Все" || marker.massRange == selectedMass)
+            speciesMatch && massMatch
+        }
+
+        displayMarkers(filteredMarkers)
+    }
+
+
+    private fun displayMarkers(markers: List<MarkerData>) {
+        // Удаляем старые маркеры
+        mapView.overlays.removeIf { it is Marker }
+
+        // Добавляем новые маркеры
+        for (markerData in markers) {
+            addMarkerToMap(markerData)
+        }
+        mapView.invalidate()
+    }
+
 
     private fun addMarkerToMap(markerData: MarkerData) {
         val geoPoint = GeoPoint(markerData.latitude, markerData.longitude)
@@ -202,12 +290,20 @@ class SecondActivity : AppCompatActivity() {
     }
 
     private fun showMarkerInfoDialog(markerData: MarkerData) {
+        val message = """
+        Название: ${markerData.title}
+        Вид рыбы: ${markerData.species}
+        Масса улова: ${markerData.massRange}
+        Добавил: ${markerData.username}
+    """.trimIndent()
+
         AlertDialog.Builder(this)
             .setTitle("Информация о метке")
-            .setMessage("Название: ${markerData.title}\nДобавил: ${markerData.username}")
+            .setMessage(message)
             .setPositiveButton("OK", null)
             .show()
     }
+
 
     private fun showDeleteMarkerDialog() {
         val builder = AlertDialog.Builder(this)
