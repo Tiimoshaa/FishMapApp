@@ -15,14 +15,13 @@ class ProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
 
-        // Извлекаем имя пользователя из Intent
+
         username = intent.getStringExtra("username")
 
         if (username != null) {
-            // Инициализация базы данных Firebase
+
             database = FirebaseDatabase.getInstance().getReference("users")
 
-            // Загружаем данные пользователя из Firebase
             loadUserProfile(username!!)
         } else {
             Toast.makeText(this, "Ошибка: имя пользователя не передано!", Toast.LENGTH_SHORT).show()
@@ -34,12 +33,12 @@ class ProfileActivity : AppCompatActivity() {
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
-                        // Извлекаем данные пользователя
+
                         for (userSnapshot in snapshot.children) {
                             val email = userSnapshot.child("email").getValue(String::class.java)
                             val password = userSnapshot.child("password").getValue(String::class.java)
 
-                            // Обновляем интерфейс
+
                             findViewById<TextView>(R.id.usernameTextView).text = "Username: $username"
                             findViewById<TextView>(R.id.emailTextView).text = "Email: $email"
                             findViewById<TextView>(R.id.passwordTextView).text = "Password: $password"

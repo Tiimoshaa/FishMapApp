@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".ProfileActivity">
 
-    <!-- Текстовое поле для отображения имени пользователя -->
     <TextView
         android:id="@+id/usernameTextView"
         android:layout_width="wrap_content"
@@ -18,7 +17,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="32dp" />
 
-    <!-- Текстовое поле для отображения email пользователя -->
     <TextView
         android:id="@+id/emailTextView"
         android:layout_width="wrap_content"
@@ -30,7 +28,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp" />
 
-    <!-- Текстовое поле для отображения пароля пользователя -->
     <TextView
         android:id="@+id/passwordTextView"
         android:layout_width="wrap_content"
@@ -42,14 +39,4 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp" />
 
-    <!-- Кнопка для редактирования профиля (можно добавить позже) -->
-    <Button
-        android:id="@+id/editProfileButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Редактировать профиль"
-        app:layout_constraintTop_toBottomOf="@id/passwordTextView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="32dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

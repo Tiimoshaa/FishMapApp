@@ -30,13 +30,10 @@ class SecondActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Настройка osmdroid
         Configuration.getInstance().load(applicationContext, androidx.preference.PreferenceManager.getDefaultSharedPreferences(this))
 
-        // Установка разметки с картой
         setContentView(R.layout.activity_second)
 
-        // Извлечение имени пользователя
         username = intent.getStringExtra("username")
         if (username != null) {
             Toast.makeText(this, "Добро пожаловать, $username!", Toast.LENGTH_SHORT).show()
@@ -44,7 +41,7 @@ class SecondActivity : AppCompatActivity() {
             Toast.makeText(this, "Ошибка: имя пользователя не передано!", Toast.LENGTH_SHORT).show()
         }
 
-        // Инициализация MapView
+
         mapView = findViewById(R.id.map)
         mapView.setMultiTouchControls(true)
 
@@ -52,27 +49,22 @@ class SecondActivity : AppCompatActivity() {
         mapView.controller.setZoom(10.0)
         mapView.controller.setCenter(startPoint)
 
-        // Настройка кнопок
         addMarkerButton = findViewById(R.id.addMarkerButton)
         deleteMarkerButton = findViewById(R.id.deleteMarkerButton)
 
-        // Настройка Firebase Database
+
         database = FirebaseDatabase.getInstance().getReference("markers")
 
-        // Загрузка маркеров из Firebase
         loadMarkersFromFirebase()
 
-        // Добавление нового маркера
         addMarkerButton.setOnClickListener {
             showAddMarkerDialog()
         }
 
-        // Удаление маркера
         deleteMarkerButton.setOnClickListener {
             showDeleteMarkerDialog()
         }
 
-        // Кнопка перехода в профиль
         val profileButton = findViewById<ImageButton>(R.id.imageButton2)
         profileButton.setOnClickListener {
             if (username != null) {
@@ -102,7 +94,7 @@ class SecondActivity : AppCompatActivity() {
         val speciesSpinner = dialogView.findViewById<Spinner>(R.id.speciesSpinner)
         val massSpinner = dialogView.findViewById<Spinner>(R.id.massSpinner)
 
-        // Задаём списки для спиннеров
+
         val speciesOptions = arrayOf("Окунь", "Карась", "Щука")
         val massOptions = arrayOf("0-5кг", "5-10кг", "10+кг")
 
@@ -194,7 +186,7 @@ class SecondActivity : AppCompatActivity() {
                         allMarkersData.add(markerData)
                     }
                 }
-                // После загрузки всех маркеров отображаем их
+
                 displayMarkers(allMarkersData)
             }
 
@@ -252,10 +244,10 @@ class SecondActivity : AppCompatActivity() {
 
 
     private fun displayMarkers(markers: List<MarkerData>) {
-        // Удаляем старые маркеры
+
         mapView.overlays.removeIf { it is Marker }
 
-        // Добавляем новые маркеры
+
         for (markerData in markers) {
             addMarkerToMap(markerData)
         }
@@ -267,21 +259,20 @@ class SecondActivity : AppCompatActivity() {
         val geoPoint = GeoPoint(markerData.latitude, markerData.longitude)
         val marker = Marker(mapView).apply {
             position = geoPoint
-            // Заголовок мы можем оставить так, чтобы он выглядел красиво,
-            // либо просто хранить название и отдельно показывать кто добавил
+
             title = markerData.title
             setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
 
-            // Сохраняем объект MarkerData в маркер, чтобы при нажатии на него было легко получить данные
+
             setRelatedObject(markerData)
 
-            // Настраиваем обработчик клика по маркеру
+
             setOnMarkerClickListener { clickedMarker, _ ->
                 val data = clickedMarker.relatedObject as? MarkerData
                 if (data != null) {
                     showMarkerInfoDialog(data)
                 }
-                true // Возвращаем true, чтобы событие не передавалось дальше
+                true
             }
         }
 
@@ -309,7 +300,6 @@ class SecondActivity : AppCompatActivity() {
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Выберите метку для удаления")
 
-        // Фильтруем маркеры, чтобы отображать только те, что принадлежат текущему пользователю
         val userMarkers = mapView.overlays
             .filterIsInstance<Marker>()
             .filter {
@@ -317,7 +307,6 @@ class SecondActivity : AppCompatActivity() {
                 data?.username == username
             }
 
-        // Если у пользователя нет своих маркеров, сообщаем об этом
         if (userMarkers.isEmpty()) {
             Toast.makeText(this, "У вас нет собственных меток для удаления", Toast.LENGTH_SHORT).show()
             return
@@ -339,23 +328,22 @@ class SecondActivity : AppCompatActivity() {
     }
 
     private fun deleteMarker(title: String) {
-        // Находим маркер на карте
+
         val markerToRemove = mapView.overlays.filterIsInstance<Marker>().find { it.title == title }
         if (markerToRemove != null) {
             val data = markerToRemove.relatedObject as? MarkerData
 
-            // Проверяем, принадлежит ли маркер текущему пользователю
+
             if (data?.username == username) {
-                // Если да, сначала удаляем с карты
+
                 mapView.overlays.remove(markerToRemove)
                 mapView.invalidate()
 
-                // Удаляем из Firebase
                 database.orderByChild("title").equalTo(title).addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         for (markerSnapshot in snapshot.children) {
                             val dbMarkerData = markerSnapshot.getValue(MarkerData::class.java)
-                            // Дополнительная проверка для надежности
+
                             if (dbMarkerData?.username == username) {
                                 markerSnapshot.ref.removeValue()
                                 Toast.makeText(this@SecondActivity, "Метка удалена", Toast.LENGTH_SHORT).show()

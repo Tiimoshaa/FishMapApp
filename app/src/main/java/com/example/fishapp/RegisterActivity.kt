@@ -28,28 +28,25 @@ class RegisterActivity : AppCompatActivity() {
             val password = passwordInput.text.toString().trim()
             val email = emailInput.text.toString().trim()
 
-            // Проверяем, что поля не пустые
+
             if (username.isEmpty() || password.isEmpty() || email.isEmpty()) {
                 Toast.makeText(this, "Заполните все поля", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // Валидация логина: длина не менее 4 символов
+
             if (username.length < 4) {
                 Toast.makeText(this, "Логин должен содержать не менее 4 символов", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // Валидация email: должен содержать '@'
+
             if (!email.contains("@")) {
                 Toast.makeText(this, "Некорректный адрес электронной почты", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // Валидация пароля:
-            // - длина не менее 8 символов
-            // - содержит хотя бы одну заглавную букву
-            // - содержит хотя бы одну цифру
+
             if (password.length < 8) {
                 Toast.makeText(this, "Пароль должен содержать не менее 8 символов", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -67,7 +64,7 @@ class RegisterActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Если все проверки пройдены, регистрируем пользователя
+
             val userId = database.push().key
             if (userId != null) {
                 val user = mapOf(
