@@ -14,10 +14,8 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
         tools:context=".SecondActivity" />
 
     <ImageButton
@@ -43,43 +41,45 @@
         app:layout_constraintTop_toTopOf="@+id/map"
         app:srcCompat="@drawable/image_2024_12_11_16_20_00_fotor_bg_remover_20241211162052_1" />
 
-    <Button
-        android:id="@+id/filterButton"
+    <LinearLayout
+        android:id="@+id/buttonContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="50dp"
-        android:backgroundTint="#53A8D8"
-        android:insetLeft="10dp"
-        android:text="Фильтр"
-        android:textColor="#E0F7FA"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <Button
-        android:id="@+id/addMarkerButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="50dp"
-        android:backgroundTint="#53A8D8"
-        android:text="Добавить"
-        android:textColor="#E0F7FA"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/deleteMarkerButton"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="parent" />
+        <Button
+            android:id="@+id/addMarkerButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#53A8D8"
+            android:text="Добавить"
+            android:textColor="#E0F7FA"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp" />
 
-    <Button
-        android:id="@+id/deleteMarkerButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginBottom="50dp"
-        android:text="Удалить"
-        android:backgroundTint="#53A8D8"
-        android:textColor="#E0F7FA"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/filterButton"
-        app:layout_constraintStart_toEndOf="@id/addMarkerButton" />
+        <Button
+            android:id="@+id/deleteMarkerButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#53A8D8"
+            android:text="Удалить"
+            android:textColor="#E0F7FA"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp" />
+
+        <Button
+            android:id="@+id/filterButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#53A8D8"
+            android:text="Фильтр"
+            android:textColor="#E0F7FA"
+            android:textSize="16sp" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
