@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#E0F7FA"
     tools:context=".MainActivity">
 
     <TextView
@@ -14,6 +15,7 @@
         android:layout_marginTop="308dp"
         android:text="Авторизация"
         android:textSize="24sp"
+        android:textColor="#44A758"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -26,6 +28,8 @@
         android:hint="Логин"
         android:inputType="text"
         android:minHeight="48dp"
+        android:backgroundTint="#60D0E3"
+        android:textColor="#2E2C2C"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/loginTitle"
@@ -39,20 +43,12 @@
         android:hint="Пароль"
         android:inputType="textPassword"
         android:minHeight="48dp"
+        android:backgroundTint="#60D0E3"
+        android:textColor="#2E2C2C"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/usernameInput"
         app:layout_constraintWidth_percent="0.8" />
-
-    <Button
-        android:id="@+id/registerButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Зарегистрироваться"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/loginButton" />
 
     <Button
         android:id="@+id/loginButton"
@@ -60,10 +56,24 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:text="Войти"
+        android:backgroundTint="#53A8D8"
+        android:textColor="#E0F7FA"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/passwordInput" />
+
+    <Button
+        android:id="@+id/registerButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Зарегистрироваться"
+        android:backgroundTint="#53A8D8"
+        android:textColor="#E0F7FA"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/loginButton" />
 
     <ImageView
         android:id="@+id/imageView3"
@@ -82,8 +92,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/alfa_slab_one"
         android:text="FishMap"
-        android:textColor="#5F0292"
-        android:textColorLink="#2E2C2C"
+        android:textColor="#52B7A3"
         android:textSize="34sp"
         app:layout_constraintBottom_toTopOf="@+id/loginTitle"
         app:layout_constraintEnd_toEndOf="parent"

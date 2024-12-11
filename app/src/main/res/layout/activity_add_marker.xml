@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#E0F7FA"
     tools:context=".AddMarkerActivity">
 
     <EditText
@@ -12,6 +13,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="Введите название метки"
+        android:backgroundTint="#60D0E3"
+        android:textColor="#2E2C2C"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -24,6 +27,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Готово"
+        android:backgroundTint="#53A8D8"
+        android:textColor="#E0F7FA"
         app:layout_constraintTop_toBottomOf="@id/markerNameInput"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

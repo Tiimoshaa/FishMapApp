@@ -5,10 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#E0F7FA"
     tools:context=".SecondActivity">
-
-
-
 
     <org.osmdroid.views.MapView
         android:id="@+id/map"
@@ -27,7 +25,7 @@
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_margin="16dp"
-        android:background="@drawable/rounded_button"
+        android:background="@drawable/ic_launcher_foreground"
         android:contentDescription="Профиль"
         android:elevation="10dp"
         android:scaleType="centerCrop"
@@ -35,24 +33,25 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="15dp"
-        android:layout_height="15dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        app:layout_constraintBottom_toBottomOf="@+id/map"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_menu_mylocation" />
-
+        app:layout_constraintStart_toStartOf="@+id/map"
+        app:layout_constraintTop_toTopOf="@+id/map"
+        app:srcCompat="@drawable/image_2024_12_11_16_20_00_fotor_bg_remover_20241211162052_1" />
 
     <Button
         android:id="@+id/filterButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="50dp"
+        android:backgroundTint="#53A8D8"
+        android:insetLeft="10dp"
         android:text="Фильтр"
+        android:textColor="#E0F7FA"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -62,7 +61,9 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="50dp"
+        android:backgroundTint="#53A8D8"
         android:text="Добавить"
+        android:textColor="#E0F7FA"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/deleteMarkerButton"
         app:layout_constraintHorizontal_chainStyle="packed"
@@ -75,10 +76,10 @@
         android:layout_marginStart="8dp"
         android:layout_marginBottom="50dp"
         android:text="Удалить"
+        android:backgroundTint="#53A8D8"
+        android:textColor="#E0F7FA"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/filterButton"
         app:layout_constraintStart_toEndOf="@id/addMarkerButton" />
 
-
 </androidx.constraintlayout.widget.ConstraintLayout>
-
