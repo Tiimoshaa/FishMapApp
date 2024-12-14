@@ -1,13 +1,12 @@
 package com.example.fishapp
 
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import com.google.firebase.database.*
-import android.util.Log
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,7 +21,7 @@ class MainActivity : AppCompatActivity() {
         val usernameInput = findViewById<EditText>(R.id.usernameInput)
         val passwordInput = findViewById<EditText>(R.id.passwordInput)
 
-
+        // Инициализация базы данных Firebase
         database = FirebaseDatabase.getInstance().getReference("users")
 
         loginButton.setOnClickListener {
@@ -30,24 +29,25 @@ class MainActivity : AppCompatActivity() {
             val password = passwordInput.text.toString()
 
             if (username.isNotEmpty() && password.isNotEmpty()) {
-
+                // Поиск пользователя по имени
                 database.orderByChild("username").equalTo(username)
                     .addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(snapshot: DataSnapshot) {
                             if (snapshot.exists()) {
                                 for (userSnapshot in snapshot.children) {
-                                    val storedPassword =
-                                        userSnapshot.child("password").getValue(String::class.java)
+                                    val storedPassword = userSnapshot.child("password").getValue(String::class.java)
 
                                     if (storedPassword == password) {
                                         // Вход успешен
-                                        Toast.makeText(this@MainActivity, "Успешный вход", Toast.LENGTH_SHORT).show()
-                                        val intent = Intent(this@MainActivity, SecondActivity::class.java)
-                                        intent.putExtra("username", username)
-                                        startActivity(intent)
-                                        finish()
-                                        return
+                                        Toast.makeText(
+                                            this@MainActivity,
+                                            "Успешный вход",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
 
+                                        // Переход в SecondFragment с передачей имени пользователя
+                                        loadSecondFragment(username)
+                                        return
                                     } else {
                                         Toast.makeText(
                                             this@MainActivity,
@@ -79,8 +79,32 @@ class MainActivity : AppCompatActivity() {
         }
 
         registerButton.setOnClickListener {
-            val intent = Intent(this, RegisterActivity::class.java)
-            startActivity(intent)
+            // Переход в RegisterFragment
+            loadFragment(RegisterFragment())
         }
+    }
+
+    /**
+     * Загрузка SecondFragment с передачей имени пользователя.
+     * @param username Имя пользователя для передачи в фрагмент.
+     */
+    private fun loadSecondFragment(username: String) {
+        val secondFragment = SecondFragment().apply {
+            arguments = Bundle().apply {
+                putString("username", username) // Передача имени пользователя
+            }
+        }
+        loadFragment(secondFragment)
+    }
+
+    /**
+     * Универсальный метод для загрузки фрагмента.
+     * @param fragment Фрагмент для отображения.
+     */
+    private fun loadFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainer, fragment) // Меняем содержимое контейнера
+            .addToBackStack(null) // Добавляем транзакцию в стек
+            .commit() // Выполняем транзакцию
     }
 }
