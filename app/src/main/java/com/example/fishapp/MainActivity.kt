@@ -84,10 +84,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Загрузка SecondFragment с передачей имени пользователя.
-     * @param username Имя пользователя для передачи в фрагмент.
-     */
+
     private fun loadSecondFragment(username: String) {
         val secondFragment = SecondFragment().apply {
             arguments = Bundle().apply {
@@ -97,10 +94,7 @@ class MainActivity : AppCompatActivity() {
         loadFragment(secondFragment)
     }
 
-    /**
-     * Универсальный метод для загрузки фрагмента.
-     * @param fragment Фрагмент для отображения.
-     */
+
     private fun loadFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainer, fragment) // Меняем содержимое контейнера
