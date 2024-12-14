@@ -58,8 +58,19 @@ class SecondFragment : Fragment() {
             showAddMarkerDialog()
         }
 
+
+
+        val deleteMarkerButton = view.findViewById<Button>(R.id.deleteMarkerButton)
         deleteMarkerButton.setOnClickListener {
-            showDeleteMarkerDialog()
+            val deleteFragment = DeleteMarkerFragment().apply {
+                arguments = Bundle().apply {
+                    putString("username", username) // Передача имени пользователя
+                }
+            }
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, deleteFragment)
+                .addToBackStack(null)
+                .commit()
         }
 
         val profileButton = view.findViewById<ImageButton>(R.id.imageButton2)
@@ -233,36 +244,7 @@ class SecondFragment : Fragment() {
             .show()
     }
 
-    private fun showDeleteMarkerDialog() {
-        val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("Выберите метку для удаления")
 
-        val userMarkers = mapView.overlays
-            .filterIsInstance<Marker>()
-            .filter {
-                val data = it.relatedObject as? MarkerData
-                data?.username == username
-            }
-
-        if (userMarkers.isEmpty()) {
-            Toast.makeText(requireContext(), "У вас нет собственных меток для удаления", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val markerTitles = userMarkers.map { it.title }.toTypedArray()
-
-        builder.setItems(markerTitles) { dialog, which ->
-            val selectedTitle = markerTitles[which]
-            deleteMarker(selectedTitle)
-            dialog.dismiss()
-        }
-
-        builder.setNegativeButton("Отмена") { dialog, _ ->
-            dialog.cancel()
-        }
-
-        builder.show()
-    }
 
     private fun deleteMarker(title: String) {
         val markerToRemove = mapView.overlays.filterIsInstance<Marker>().find { it.title == title }
