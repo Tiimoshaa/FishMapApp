@@ -5,8 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#E0F7FA"
-    tools:context=".SecondActivity">
+    android:background="#E0F7FA">
+
 
     <org.osmdroid.views.MapView
         android:id="@+id/map"
