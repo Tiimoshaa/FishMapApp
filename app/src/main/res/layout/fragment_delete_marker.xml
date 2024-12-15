@@ -9,25 +9,24 @@
     android:background="#E0F7FA"
     tools:context=".DeleteMarkerFragment">
 
-    <EditText
-        android:id="@+id/markerTitleInput"
+    <Spinner
+        android:id="@+id/markerSpinner"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="Название метки"
-        android:inputType="text"
+        android:spinnerMode="dropdown"
+        android:prompt="@string/select_marker"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
-
     <Button
         android:id="@+id/deleteButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Удалить метку"
-        android:backgroundTint="#53A8D8"
-        android:textColor="#E0F7FA"
+        android:text="Удалить маркер"
+        android:backgroundTint="#D32F2F"
+        android:textColor="#FFFFFF"
         android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@id/markerTitleInput"
+        app:layout_constraintTop_toBottomOf="@id/markerSpinner"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="24dp" />
