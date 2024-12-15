@@ -1,23 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/light_gray">
+    android:padding="16dp"
+    android:background="#E0F7FA"
+    tools:context=".DeleteMarkerFragment">
 
-    <TextView
+    <EditText
+        android:id="@+id/markerTitleInput"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Название метки"
+        android:inputType="text"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/deleteButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Выберите метку для удаления"
-        android:textSize="18sp"
-        android:layout_gravity="center_horizontal"
-        android:paddingBottom="8dp" />
+        android:text="Удалить метку"
+        android:backgroundTint="#53A8D8"
+        android:textColor="#E0F7FA"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/markerTitleInput"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="24dp" />
 
-    <ListView
-        android:id="@+id/markersListView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:divider="@android:color/darker_gray"
-        android:dividerHeight="1dp" />
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

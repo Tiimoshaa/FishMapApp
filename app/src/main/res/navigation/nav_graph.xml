@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/loginFragment">
+
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.fishapp.LoginFragment"
+        android:label="Авторизация"
+        tools:layout="@layout/fragment_login">
+        <action
+            android:id="@+id/action_loginFragment_to_secondFragment"
+            app:destination="@id/secondFragment">
+            <argument
+                android:name="username"
+                app:argType="string" />
+        </action>
+        <action
+            android:id="@+id/action_loginFragment_to_registerFragment"
+            app:destination="@id/registerFragment" />
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.example.fishapp.RegisterFragment"
+        android:label="Регистрация"
+        tools:layout="@layout/fragment_register">
+        <action
+            android:id="@+id/action_registerFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/secondFragment"
+        android:name="com.example.fishapp.SecondFragment"
+        android:label="Основной экран"
+        tools:layout="@layout/fragment_second">
+        <argument
+            android:name="username"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_secondFragment_to_profileFragment"
+            app:destination="@id/profileFragment">
+            <argument
+                android:name="username"
+                app:argType="string" />
+        </action>
+        <action
+            android:id="@+id/action_secondFragment_to_deleteMarkerFragment"
+            app:destination="@id/deleteMarkerFragment">
+            <argument
+                android:name="username"
+                app:argType="string" />
+        </action>
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.fishapp.ProfileFragment"
+        android:label="Профиль"
+        tools:layout="@layout/fragment_profile">
+        <argument
+            android:name="username"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_profileFragment_to_editProfileFragment"
+            app:destination="@id/editProfileFragment">
+            <argument
+                android:name="username"
+                app:argType="string" />
+        </action>
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/editProfileFragment"
+        android:name="com.example.fishapp.EditProfileFragment"
+        android:label="Редактирование профиля"
+        tools:layout="@layout/fragment_edit_profile">
+        <argument
+            android:name="username"
+            app:argType="string" />
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/deleteMarkerFragment"
+        android:name="com.example.fishapp.DeleteMarkerFragment"
+        android:label="Удаление меток"
+        tools:layout="@layout/fragment_delete_marker">
+        <argument
+            android:name="username"
+            app:argType="string" />
+    </fragment>
+</navigation>

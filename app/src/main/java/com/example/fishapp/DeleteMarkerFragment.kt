@@ -4,104 +4,66 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.ListView
-import android.widget.Toast
+import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.google.firebase.database.*
 
 class DeleteMarkerFragment : Fragment() {
 
+    private val args: DeleteMarkerFragmentArgs by navArgs()
     private lateinit var database: DatabaseReference
-    private var username: String? = null
-    private val userMarkers = mutableListOf<MarkerData>() // Список меток текущего пользователя
+    private lateinit var deleteButton: Button
+    private lateinit var markerTitleInput: EditText
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         val view = inflater.inflate(R.layout.fragment_delete_marker, container, false)
 
-        val markersListView = view.findViewById<ListView>(R.id.markersListView)
+        deleteButton = view.findViewById(R.id.deleteButton)
+        markerTitleInput = view.findViewById(R.id.markerTitleInput)
 
-        username = arguments?.getString("username")
+        val username = args.username
 
-        if (username != null) {
-            database = FirebaseDatabase.getInstance().getReference("markers")
-            loadUserMarkers { markers ->
-                // Адаптер для отображения списка меток
-                val adapter = ArrayAdapter(
-                    requireContext(),
-                    android.R.layout.simple_list_item_1,
-                    markers.map { it.title }
-                )
-                markersListView.adapter = adapter
+        database = FirebaseDatabase.getInstance().getReference("markers")
 
-                markersListView.setOnItemClickListener { _, _, position, _ ->
-                    val selectedMarker = markers[position]
-                    deleteMarker(selectedMarker) {
-                        markers.removeAt(position)
-                        adapter.notifyDataSetChanged() // Обновление списка
-                        Toast.makeText(requireContext(), "Метка удалена", Toast.LENGTH_SHORT).show()
-                    }
-                }
+        deleteButton.setOnClickListener {
+            val title = markerTitleInput.text.toString().trim()
+            if (title.isNotEmpty()) {
+                deleteMarker(title, username)
+            } else {
+                Toast.makeText(requireContext(), "Название метки не может быть пустым", Toast.LENGTH_SHORT).show()
             }
-        } else {
-            Toast.makeText(requireContext(), "Ошибка: пользователь не найден!", Toast.LENGTH_SHORT).show()
         }
 
         return view
     }
 
-    /**
-     * Загрузка всех меток текущего пользователя.
-     */
-    private fun loadUserMarkers(onMarkersLoaded: (MutableList<MarkerData>) -> Unit) {
-        database.orderByChild("username").equalTo(username)
+    private fun deleteMarker(title: String, username: String) {
+        database.orderByChild("title").equalTo(title)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    userMarkers.clear()
+                    var markerFound = false
                     for (markerSnapshot in snapshot.children) {
                         val markerData = markerSnapshot.getValue(MarkerData::class.java)
-                        if (markerData != null) {
-                            userMarkers.add(markerData)
-                        }
-                    }
-                    onMarkersLoaded(userMarkers)
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    Toast.makeText(
-                        requireContext(),
-                        "Ошибка загрузки данных: ${error.message}",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            })
-    }
-
-    /**
-     * Удаление метки из Firebase и списка.
-     */
-    private fun deleteMarker(markerData: MarkerData, onDeleted: () -> Unit) {
-        database.orderByChild("title").equalTo(markerData.title)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    for (markerSnapshot in snapshot.children) {
-                        val dbMarker = markerSnapshot.getValue(MarkerData::class.java)
-                        if (dbMarker?.username == username) {
+                        if (markerData?.username == username) {
                             markerSnapshot.ref.removeValue()
-                            onDeleted()
+                            Toast.makeText(requireContext(), "Метка удалена", Toast.LENGTH_SHORT).show()
+                            markerFound = true
+                            break
                         }
+                    }
+                    if (!markerFound) {
+                        Toast.makeText(requireContext(), "Метка не найдена или принадлежит другому пользователю", Toast.LENGTH_SHORT).show()
                     }
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    Toast.makeText(
-                        requireContext(),
-                        "Ошибка удаления: ${error.message}",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(requireContext(), "Ошибка удаления: ${error.message}", Toast.LENGTH_SHORT).show()
                 }
             })
     }

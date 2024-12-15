@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.google.firebase.database.*
 import org.osmdroid.config.Configuration
 import org.osmdroid.util.GeoPoint
@@ -15,30 +17,31 @@ import org.osmdroid.views.overlay.Marker
 
 class SecondFragment : Fragment() {
 
+
+    private val args: SecondFragmentArgs by navArgs()
     private lateinit var mapView: MapView
     private lateinit var addMarkerButton: Button
     private lateinit var deleteMarkerButton: Button
+    private lateinit var profileButton: ImageButton
+    private lateinit var filterButton: Button
     private lateinit var database: DatabaseReference
-    private var username: String? = null
     private val allMarkersData = mutableListOf<MarkerData>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         val view = inflater.inflate(R.layout.fragment_second, container, false)
+
 
         Configuration.getInstance().load(
             requireContext(),
             androidx.preference.PreferenceManager.getDefaultSharedPreferences(requireContext())
         )
 
-        username = arguments?.getString("username")
-        if (username != null) {
-            Toast.makeText(requireContext(), "Добро пожаловать, $username!", Toast.LENGTH_SHORT).show()
-        } else {
-            Toast.makeText(requireContext(), "Ошибка: имя пользователя не передано!", Toast.LENGTH_SHORT).show()
-        }
+        val username = args.username
+        Toast.makeText(requireContext(), "Добро пожаловать, $username!", Toast.LENGTH_SHORT).show()
+
 
         mapView = view.findViewById(R.id.map)
         mapView.setMultiTouchControls(true)
@@ -49,42 +52,33 @@ class SecondFragment : Fragment() {
 
         addMarkerButton = view.findViewById(R.id.addMarkerButton)
         deleteMarkerButton = view.findViewById(R.id.deleteMarkerButton)
+        profileButton = view.findViewById(R.id.imageButton2)
+        filterButton = view.findViewById(R.id.filterButton)
+
 
         database = FirebaseDatabase.getInstance().getReference("markers")
 
+
         loadMarkersFromFirebase()
 
+
         addMarkerButton.setOnClickListener {
-            showAddMarkerDialog()
+            showAddMarkerDialog(username)
         }
 
 
-
-        val deleteMarkerButton = view.findViewById<Button>(R.id.deleteMarkerButton)
         deleteMarkerButton.setOnClickListener {
-            val deleteFragment = DeleteMarkerFragment().apply {
-                arguments = Bundle().apply {
-                    putString("username", username) // Передача имени пользователя
-                }
-            }
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainer, deleteFragment)
-                .addToBackStack(null)
-                .commit()
+            val action = SecondFragmentDirections.actionSecondFragmentToDeleteMarkerFragment(username)
+            findNavController().navigate(action)
         }
 
-        val profileButton = view.findViewById<ImageButton>(R.id.imageButton2)
+
         profileButton.setOnClickListener {
-            val profileFragment = ProfileFragment().apply {
-                arguments = Bundle().apply { putString("username", username) }
-            }
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainer, profileFragment)
-                .addToBackStack(null)
-                .commit()
+            val action = SecondFragmentDirections.actionSecondFragmentToProfileFragment(username)
+            findNavController().navigate(action)
         }
 
-        val filterButton = view.findViewById<Button>(R.id.filterButton)
+
         filterButton.setOnClickListener {
             showFilterDialog()
         }
@@ -92,7 +86,7 @@ class SecondFragment : Fragment() {
         return view
     }
 
-    private fun showAddMarkerDialog() {
+    private fun showAddMarkerDialog(username: String) {
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle("Добавить метку")
 
@@ -120,7 +114,7 @@ class SecondFragment : Fragment() {
             val selectedMass = massSpinner.selectedItem.toString()
 
             if (markerTitle.isNotEmpty()) {
-                addMarkerAtCenter(markerTitle, selectedSpecies, selectedMass)
+                addMarkerAtCenter(markerTitle, selectedSpecies, selectedMass, username)
             } else {
                 Toast.makeText(requireContext(), "Название не может быть пустым", Toast.LENGTH_SHORT).show()
             }
@@ -134,14 +128,14 @@ class SecondFragment : Fragment() {
         builder.show()
     }
 
-    private fun addMarkerAtCenter(title: String, species: String, massRange: String) {
+    private fun addMarkerAtCenter(title: String, species: String, massRange: String, username: String) {
         val centerPoint = mapView.mapCenter as GeoPoint
 
         val markerData = MarkerData(
             title = title,
             latitude = centerPoint.latitude,
             longitude = centerPoint.longitude,
-            username = username ?: "",
+            username = username,
             species = species,
             massRange = massRange
         )
@@ -200,7 +194,9 @@ class SecondFragment : Fragment() {
     }
 
     private fun displayMarkers(markers: List<MarkerData>) {
+
         mapView.overlays.removeIf { it is Marker }
+
 
         for (markerData in markers) {
             addMarkerToMap(markerData)
@@ -244,14 +240,12 @@ class SecondFragment : Fragment() {
             .show()
     }
 
-
-
     private fun deleteMarker(title: String) {
         val markerToRemove = mapView.overlays.filterIsInstance<Marker>().find { it.title == title }
         if (markerToRemove != null) {
             val data = markerToRemove.relatedObject as? MarkerData
 
-            if (data?.username == username) {
+            if (data?.username == args.username) {
                 mapView.overlays.remove(markerToRemove)
                 mapView.invalidate()
 
@@ -260,7 +254,7 @@ class SecondFragment : Fragment() {
                         for (markerSnapshot in snapshot.children) {
                             val dbMarkerData = markerSnapshot.getValue(MarkerData::class.java)
 
-                            if (dbMarkerData?.username == username) {
+                            if (dbMarkerData?.username == args.username) {
                                 markerSnapshot.ref.removeValue()
                                 Toast.makeText(requireContext(), "Метка удалена", Toast.LENGTH_SHORT).show()
                             } else {

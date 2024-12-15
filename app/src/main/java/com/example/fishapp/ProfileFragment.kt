@@ -4,54 +4,46 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import com.example.fishapp.databinding.FragmentProfileBinding
 import com.google.firebase.database.*
 
 class ProfileFragment : Fragment() {
 
+    private val args: ProfileFragmentArgs by navArgs()
     private lateinit var database: DatabaseReference
-    private var username: String? = null
+
+    private var _binding: FragmentProfileBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_profile, container, false)
+        _binding = FragmentProfileBinding.inflate(inflater, container, false)
+        val view = binding.root
 
-        val usernameTextView = view.findViewById<TextView>(R.id.usernameTextView)
-        val emailTextView = view.findViewById<TextView>(R.id.emailTextView)
-        val passwordTextView = view.findViewById<TextView>(R.id.passwordTextView)
-        val editProfileButton = view.findViewById<Button>(R.id.editProfileButton)
+        val username = args.username
 
-        username = arguments?.getString("username")
-
-        if (username != null) {
+        if (username.isNotEmpty()) {
             database = FirebaseDatabase.getInstance().getReference("users")
-            loadUserProfile(username!!, usernameTextView, emailTextView, passwordTextView)
+            loadUserProfile(username)
         } else {
             Toast.makeText(requireContext(), "Ошибка: имя пользователя не передано!", Toast.LENGTH_SHORT).show()
         }
 
-        editProfileButton.setOnClickListener {
-            // Переход в EditProfileFragment
-            val editProfileFragment = EditProfileFragment().apply {
-                arguments = Bundle().apply {
-                    putString("username", username)
-                }
-            }
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainer, editProfileFragment)
-                .addToBackStack(null)
-                .commit()
+        binding.editProfileButton.setOnClickListener {
+            val action = ProfileFragmentDirections.actionProfileFragmentToEditProfileFragment(username)
+            findNavController().navigate(action)
         }
 
         return view
     }
 
-    private fun loadUserProfile(username: String, usernameTextView: TextView, emailTextView: TextView, passwordTextView: TextView) {
+    private fun loadUserProfile(username: String) {
         database.orderByChild("username").equalTo(username)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -60,9 +52,9 @@ class ProfileFragment : Fragment() {
                             val email = userSnapshot.child("email").getValue(String::class.java)
                             val password = userSnapshot.child("password").getValue(String::class.java)
 
-                            usernameTextView.text = "Username: $username"
-                            emailTextView.text = "Email: $email"
-                            passwordTextView.text = "Password: $password"
+                            binding.usernameTextView.text = "Username: $username"
+                            binding.emailTextView.text = "Email: $email"
+                            binding.passwordTextView.text = "Password: $password"
                         }
                     } else {
                         Toast.makeText(requireContext(), "Пользователь не найден", Toast.LENGTH_SHORT).show()
@@ -70,8 +62,13 @@ class ProfileFragment : Fragment() {
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    Toast.makeText(requireContext(), "Ошибка подключения к базе данных", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Ошибка подключения к базе данных: ${error.message}", Toast.LENGTH_SHORT).show()
                 }
             })
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
