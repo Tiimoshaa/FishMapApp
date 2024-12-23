@@ -1,33 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/dialog_add_marker_root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="20dp"
-    android:background="#E0F7FA">
+    android:padding="20dp">
 
     <EditText
         android:id="@+id/markerTitleInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Название метки"
-        android:backgroundTint="#60D0E3"
-        android:textColor="#2E2C2C"
         android:layout_marginBottom="16dp"
-        android:padding="12dp" />
+        android:padding="12dp"
+        android:textColor="#2E2C2C"
+        android:textSize="16sp" />
 
     <Spinner
         android:id="@+id/speciesSpinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="#60D0E3"
-        android:layout_marginBottom="16dp" />
+        android:spinnerMode="dropdown"
+        android:layout_marginBottom="16dp"
+        android:popupBackground="@drawable/bg_spinner_popup"
+
+        android:drawableEnd="@drawable/ic_arrow_drop_down"
+        android:drawablePadding="8dp"
+        />
 
     <Spinner
         android:id="@+id/massSpinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="#60D0E3"
-        android:layout_marginBottom="16dp" />
+        android:spinnerMode="dropdown"
+        android:layout_marginBottom="16dp"
+        android:popupBackground="@drawable/bg_spinner_popup"
+
+        android:drawableEnd="@drawable/ic_arrow_drop_down"
+        android:drawablePadding="8dp"
+        />
 
 </LinearLayout>

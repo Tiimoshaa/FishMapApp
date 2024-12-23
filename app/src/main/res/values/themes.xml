@@ -9,5 +9,29 @@
         <item name="colorOnSecondary">@color/black</item>
     </style>
 
+        <!-- Основная тема приложения (пример) -->
+        <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+            <!-- ... -->
+        </style>
+
+        <!-- Кастомная тема AlertDialog -->
+        <style name="CustomAlertDialogTheme" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
+            <!-- ВАЖНО: без android: префикса -->
+            <item name="buttonBarPositiveButtonStyle">@style/MyPositiveButtonStyle</item>
+            <item name="buttonBarNegativeButtonStyle">@style/MyNegativeButtonStyle</item>
+        </style>
+
+        <style name="MyPositiveButtonStyle" parent="@style/Widget.MaterialComponents.Button.TextButton.Dialog">
+            <item name="android:textColor">@android:color/holo_red_dark</item>
+        </style>
+
+        <style name="MyNegativeButtonStyle" parent="@style/Widget.MaterialComponents.Button.TextButton.Dialog">
+            <item name="android:textColor">@android:color/holo_blue_dark</item>
+        </style>
+
+
+
+
+
     <style name="Theme.FishApp" parent="Base.Theme.FishApp" />
 </resources>

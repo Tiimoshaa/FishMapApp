@@ -4,4 +4,10 @@
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
     </style>
+    <style name="CustomDialogTheme" parent="Theme.AppCompat.Dialog">
+        <!-- Задаём наш скруглённый фон -->
+        <item name="android:windowBackground">@drawable/bg_dialog_rounded</item>
+        <!-- При необходимости убираем TitleBar, если не нужен -->
+        <item name="android:windowNoTitle">true</item>
+    </style>
 </resources>

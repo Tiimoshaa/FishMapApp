@@ -1,24 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:padding="20dp"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/dialog_filter_root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#E0F7FA">
+    android:orientation="vertical"
+    android:padding="20dp"
+    tools:ignore="ExtraText">
 
     <Spinner
         android:id="@+id/speciesFilterSpinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="#60D0E3"
+        android:spinnerMode="dropdown"
         android:layout_marginBottom="16dp"
-        android:padding="8dp" />
+        android:popupBackground="@drawable/bg_spinner_popup"
+        />
+
+    <!-- Тот же фон выпадающего списка, что и в add_marker -->
+    android:popupBackground="@drawable/bg_spinner_popup"/>
+
+    <!-- Стрелочка справа -->
+    android:drawableEnd="@drawable/ic_arrow_drop_down"
+    android:drawablePadding="8dp" />
 
     <Spinner
         android:id="@+id/massFilterSpinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="#60D0E3"
+        android:spinnerMode="dropdown"
         android:layout_marginBottom="16dp"
-        android:padding="8dp" />
+
+        android:popupBackground="@drawable/bg_spinner_popup"
+        android:drawableEnd="@drawable/ic_arrow_drop_down"
+        android:drawablePadding="8dp" />
+
 </LinearLayout>

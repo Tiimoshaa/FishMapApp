@@ -14,8 +14,10 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
         tools:context=".SecondActivity" />
 
     <ImageButton
@@ -64,17 +66,17 @@
 
         <Button
             android:id="@+id/deleteMarkerButton"
-            android:layout_width="wrap_content"
+            android:layout_width="123dp"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
             android:backgroundTint="#53A8D8"
             android:text="Удалить"
             android:textColor="#E0F7FA"
-            android:textSize="16sp"
-            android:layout_marginBottom="8dp" />
+            android:textSize="16sp" />
 
         <Button
             android:id="@+id/filterButton"
-            android:layout_width="wrap_content"
+            android:layout_width="123dp"
             android:layout_height="wrap_content"
             android:backgroundTint="#53A8D8"
             android:text="Фильтр"
