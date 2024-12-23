@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -155,6 +156,7 @@ class SecondFragment : Fragment() {
 
         val marker = Marker(mapView).apply {
             position = centerPoint
+            icon = ContextCompat.getDrawable(requireContext(), R.drawable.markericon)
             this.title = markerData.title
             setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
             setRelatedObject(markerData)
@@ -326,6 +328,16 @@ class SecondFragment : Fragment() {
     }
 
     private fun showMarkerInfoDialog(markerData: MarkerData) {
+        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_marker_info, null)
+        val dialogTitleTextView = dialogView.findViewById<TextView>(R.id.dialogTitleTextView)
+        val markerTitleTextView = dialogView.findViewById<TextView>(R.id.markerTitleTextView)
+        val markerSpeciesTextView = dialogView.findViewById<TextView>(R.id.markerSpeciesTextView)
+        val markerMassTextView = dialogView.findViewById<TextView>(R.id.markerMassTextView)
+        val markerUsernameTextView = dialogView.findViewById<TextView>(R.id.markerUsernameTextView)
+        val closeDialogButton = dialogView.findViewById<Button>(R.id.closeDialogButton)
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .create()
         val message = """
             Название: ${markerData.title}
             Вид рыбы: ${markerData.species}
@@ -333,11 +345,13 @@ class SecondFragment : Fragment() {
             Добавил: ${markerData.username}
         """.trimIndent()
 
-        AlertDialog.Builder(requireContext())
-            .setTitle("Информация о метке")
-            .setMessage(message)
-            .setPositiveButton("OK", null)
-            .show()
+        // Обработка нажатия на кнопку закрытия
+        closeDialogButton.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        // Отображение диалога
+        dialog.show()
     }
 
     // ------------------------------------------------
